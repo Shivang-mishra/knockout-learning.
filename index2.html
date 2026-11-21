@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>my second topic</title>
+    <script src="./knockout-3.5.3.js"></script>
+</head>
+
+<body style="
+background-color: rgb(177, 168, 168);">
+    <h2> Employee management System</h2>
+
+    <!-- ADD EMPLOYEE -->
+    <input type="text" placeholder="ENTER YOUR Name" data-bind="value: NewEmployeeName ,
+     valueUpdate:'input'">
+
+    <button data-bind="click: addEmployee">
+        add Employee
+    </button>
+
+    <h3>
+        Total employee:
+        <span data-bind="text:employees().length"></span>
+    </h3>
+
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th> ID</th>
+                <th> EMPLOYEE NAME</th>
+                <th> Departement</th>
+                <th> Action</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: employees">
+            <tr>
+                <td data-bind="text:id"></td>
+                <td data-bind="text:name"></td>
+                <td data-bind="text:department"></td>
+
+                <td>
+                    <button data-bind="click:$parent.removeEmployee">
+                        Delete
+                    </button>
+                </td>
+
+
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        // create viewmodel 
+
+        function EmployeeViewModel() {
+            const self = this
+
+            self.NewEmployeeName = ko.observable("")
+
+            // employee Array
+
+            self.employees = ko.observableArray([
+                {
+                    id: 101,
+                    name: "Amit",
+                    department: "IT"
+                },
+
+                {
+                    id: 102,
+                    name: "Rahul",
+                    department: "HR"
+                },
+
+                {
+                    id: 103,
+                    name: "Shivang",
+                    department: "Development"
+                }
+            ])
+
+            // add employee 
+
+            self.addEmployee = function () {
+                const name = self.NewEmployeeName().trim()
+
+                if (name === "") {
+                    alert("please enter the name")
+                    return
+                }
+
+                self.employees.push(
+                    {
+                        id: Date.now(),
+                        name: name,
+                        department: "not assigned"
+                    }
+                )
+                self.NewEmployeeName("")
+
+            }
+            // Delete Employee
+
+            self.removeEmployee = function (employee) {
+
+                self.employees.remove(employee);
+
+            };
+        }
+
+        // create viewmodel instance 
+
+        const viewmodel = new EmployeeViewModel()
+
+        // activate viewmodel 
+        ko.applyBindings(viewmodel)
+    </script>
+</body>
+
+</html>

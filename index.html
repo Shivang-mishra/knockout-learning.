@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Knockout App</title>
+    <!-- Load Knockout.js -->
+    <script src="./knockout-3.5.3.js"></script>
+</head>
+
+<body style="background-color: rgb(121, 111, 111);">
+    <h2>Employee Management System</h2>
+    <!-- Input: Employee Name -->
+    <label>Employee Name:</label>
+    <input type="text" data-bind="value: employeeName, valueUpdate: 'input'">
+    <!-- Display: Employee Name -->
+    <p>
+        Employee Name:
+        <strong data-bind="text: employeeName"></strong>
+    </p>
+    <!-- Display: Department -->
+    <p>
+        Department:
+        <strong data-bind="text: department"></strong>
+    </p>
+    <!-- Button -->
+    <button data-bind="click: changeDepartment">Change Department</button>
+    <script>
+        // STEP 1: Create ViewModel
+        function EmployeeViewModel() {
+            const self = this;
+            // Observable properties
+            self.employeeName = ko.observable("Shivang");
+            self.department = ko.observable("IT");
+            // Function
+            self.changeDepartment = function () {
+                self.department("Engineering");
+            };
+        }
+        // STEP 2: Create ViewModel object
+        const viewModel = new EmployeeViewModel();
+        // STEP 3: Activate Knockout bindings
+        ko.applyBindings(viewModel);
+    </script>
+</body>
+
+</html>
