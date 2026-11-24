@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+    <script src="./knockout-3.5.3.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #eeeeee;
+        }
+
+        .loading {
+            color: blue;
+        }
+
+        .error {
+            color: red;
+        }
+
+        button {
+            padding: 9px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Employee Management System</h2>
+
+    <!-- Refresh button -->
+    <button data-bind="click: loadEmployees, disable: isLoading">
+        Load Employees
+    </button>
+    <p class="loading" data-bind="visible: isLoading">
+        Loading employees...
+    </p>
+
+    <!-- Error message -->
+    <p class="error" data-bind="visible: errorMessage, text: errorMessage"></p>
+
+    <!-- Employee count -->
+    <h3>
+        Total Employees:
+        <span data-bind="text: employees().length"></span>
+    </h3>
+
+    <!-- Employee table -->
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>EMAIL</th>
+                <th>DEPARTMENT</th>
+            </tr>
+        </thead>
+        <tbody data-bind="foreach: employees">
+            <tr>
+                <td data-bind="text: id"></td>
+                <td data-bind="text: name"></td>
+                <td data-bind="text: email"></td>
+                <td data-bind="text: department"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        // Create ViewModel
+        function EmployeeViewModel() {
+            const self = this;
+
+            self.employees = ko.observableArray([]);
+            self.isLoading = ko.observable(false);
+            self.errorMessage = ko.observable("");
+
+            self.loadEmployees = async function () {
+                self.isLoading(true);
+                self.errorMessage("");
+
+                try {
+                    const response = await fetch("https://dummyjson.com/users?limit=5");
+
+                    if (!response.ok) {
+                        throw new Error("HTTP Error: " + response.status);
+                    }
+
+                    const result = await response.json();
+
+                    // Map API data
+                    const employeeList = result.users.map(user => {
+                        return {
+                            id: user.id,
+                            name: user.firstName + " " + user.lastName,
+                            email: user.email,
+                            department: user.company?.department || "Not Assigned"
+                        };
+                    });
+
+                    // Update ObservableArray
+                    self.employees(employeeList);
+                } catch (error) {
+                    console.error("API Error:", error);
+                    self.errorMessage("Unable to load employees. Please try again.");
+                } finally {
+                    self.isLoading(false);
+                }
+            };
+        }
+
+        // Create ViewModel instance
+        const viewModel = new EmployeeViewModel();
+
+        // Activate Knockout bindings
+        ko.applyBindings(viewModel);
+
+        // Initial API call
+        viewModel.loadEmployees();
+    </script>
+</body>
+
+</html>
